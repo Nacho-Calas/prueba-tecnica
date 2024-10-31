@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -7,6 +7,8 @@ import { Movies } from 'src/database/schemas/movies.schema';
 import { CreateMoviesDTO } from './dto/createMovies.dto';
 import { MoviesDTO } from './dto/movies.dto';
 import { MoviesService } from './movies.service';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'src/database/enums/role.enum';
 
 
 @Controller('/movies')
@@ -34,7 +36,9 @@ export class MoviesController {
     }
 
   @Get('/:id')
-    // @AuthGuard()
+    
+    // @UseGuards(AuthGuard())
+    @Roles(Role.ADMIN)
     @ApiParam({ name: 'id', required: true, description: 'ID de la película' })
     @ApiOperation({ summary: 'Obtener una película por ID' })
     @ApiResponse({
@@ -47,7 +51,7 @@ export class MoviesController {
         const id = req.params.id;
         return this.moviesService.getMovieById(id);
     }
-
+ 
     @Post('/create')
     // @AuthGuard()
     // @ApiRoles('admin')
