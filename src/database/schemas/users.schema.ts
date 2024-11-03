@@ -5,18 +5,17 @@ import { Role } from '../enums/role.enum';
 
 @Schema()
 export class Users extends BaseDocument {
-  
   @Prop({ required: true })
   username: string;
 
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true, nullable: false})
+  @Prop({ required: true, nullable: false })
   password: string;
 
-  @Prop({ default: [Role.USER], type: [String], enum: Role })
-  role: Role[]
+  @Prop({ default: [Role.USER], type: [{ type: String, enum: Role }] })
+  role: Role[];
 }
 
 export type UsersDocument = HydratedDocument<Users>;

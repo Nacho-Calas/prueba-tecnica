@@ -11,6 +11,7 @@ import { Roles } from 'src/auth/decorators/roles.decorators';
 import { Role } from 'src/database/enums/role.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateMoviesDTO } from './dto/updateMovies.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 
 @Controller('/movies')
@@ -21,18 +22,16 @@ export class MoviesController {
     ) {}
 
   @Get('/all')
-    @UseGuards(AuthGuard())
-    @Roles(Role.USER)
     @ApiOperation({ summary: 'Obtener todas las películas' })
     @ApiResponse({
-        status: 200,
         description: 'Lista de películas',
         type: [MoviesDTO],
+        status: HttpStatus.OK,
     })
     @ApiResponse({ status: 401, description: 'No autorizado' })
     async getMovies(): Promise<Object> {
         try{
-            const movies = this.moviesService.getMovies();
+            const movies = await this.moviesService.getMovies();
             return {
                 message: 'Lista de películas',
                 movies: movies,
@@ -44,14 +43,14 @@ export class MoviesController {
     }
 
   @Get('/:id')
-    @UseGuards(AuthGuard())
-    // @Roles(Role.ADMIN)
+    @Roles(Role.USER)
+    @UseGuards(AuthGuard(), RolesGuard)
     @ApiParam({ name: 'id', required: true, description: 'ID de la película' })
     @ApiOperation({ summary: 'Obtener una película por ID' })
     @ApiResponse({
-        status: 200,
         description: 'Película encontrada',
         type: MoviesDTO,
+        status: HttpStatus.OK,
     })
     @ApiResponse({ status: 401, description: 'No autorizado' })
     async getMovieById(@Req() req: Request): Promise<Object> {
@@ -65,12 +64,12 @@ export class MoviesController {
     }
  
     @Post('/create')
-    @UseGuards(AuthGuard())
-    // @ApiRoles('admin')
+    @Roles(Role.ADMIN)
+    @UseGuards(AuthGuard(), RolesGuard)
     @ApiOperation({ summary: 'Crear una película' })
     @ApiResponse({
-        status: 200,
         description: 'Película creada',
+        status: HttpStatus.OK,
         type: MoviesDTO,
     })
     @ApiBody({ type: CreateMoviesDTO })
@@ -85,14 +84,14 @@ export class MoviesController {
     }
 
     @Put('/update/:id')
-    @UseGuards(AuthGuard())
-    // @ApiRoles('admin')
+    @Roles(Role.ADMIN)
+    @UseGuards(AuthGuard(), RolesGuard)
     @ApiParam({ name: 'id', required: true, description: 'ID de la película' })
     @ApiOperation({ summary: 'Actualizar una película' })
     @ApiResponse({
-        status: 200,
         description: 'Película actualizada',
         type: MoviesDTO,
+        status: HttpStatus.OK,
     })
     @ApiBody({ type: UpdateMoviesDTO })
     @ApiResponse({ status: 401, description: 'No autorizado' })
@@ -107,8 +106,8 @@ export class MoviesController {
     }
 
     @Put('/delete/:id')
-    @UseGuards(AuthGuard())
-    // @ApiRoles('admin')
+    @Roles(Role.ADMIN)
+    @UseGuards(AuthGuard(), RolesGuard)
     @ApiOperation({ summary: 'Eliminar una película' })
     @ApiResponse({
         status: 200,
