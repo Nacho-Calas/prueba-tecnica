@@ -15,6 +15,7 @@ export class CreateMoviesDTO extends PartialType(MoviesDTO) {
     description: 'El ID del episodio',
     example: 4,
   })
+  @IsNotEmpty({ message: 'El ID del episodio no puede estar vacío' })
   @IsNumber({}, { message: 'El ID del episodio debe ser un número' })
   episode_id: number;
 
@@ -23,8 +24,8 @@ export class CreateMoviesDTO extends PartialType(MoviesDTO) {
     example: 'It is a period of civil war...',
   })
   @IsString()
-  @IsNotEmpty({ message: 'El opening crawl no puede estar vacío' })
-  opening_crawl: string;
+  @IsOptional()
+  opening_crawl?: string;
 
   @ApiProperty({
     description: 'El director de la película',
@@ -39,8 +40,8 @@ export class CreateMoviesDTO extends PartialType(MoviesDTO) {
     example: 'Gary Kurtz, Rick McCallum',
   })
   @IsString()
-  @IsNotEmpty({ message: 'El productor no puede estar vacío' })
-  producer: string;
+  @IsOptional()
+  producer?: string;
 
   @ApiProperty({
     description: 'Fecha de estreno',
@@ -96,26 +97,9 @@ export class CreateMoviesDTO extends PartialType(MoviesDTO) {
   species?: string[];
 
   @ApiProperty({
-    description: 'Fecha de creación del registro',
-    example: '2014-12-10T14:23:31.880000Z',
-  })
-  @IsDateString({}, { message: 'La fecha creada debe estar en formato ISO' })
-  @IsOptional()
-  created?: string;
-
-  @ApiProperty({
-    description: 'Fecha de última edición del registro',
-    example: '2014-12-20T19:49:45.256000Z',
-  })
-  @IsDateString({}, { message: 'La fecha editada debe estar en formato ISO' })
-  @IsOptional()
-  edited?: string;
-
-  @ApiProperty({
     description: 'URL del recurso',
     example: 'https://swapi.dev/api/films/1/',
   })
-  @IsUrl({}, { message: 'La URL debe ser válida' })
   @IsOptional()
   url?: string;
 }

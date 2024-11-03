@@ -1,11 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsOptional, IsUUID } from 'class-validator';
+import { IsDate, IsOptional } from 'class-validator';
 
 export class BaseDTO {
-
-  @IsUUID()
-  @IsOptional()
-  id: string;
 
   @IsDate()
   @IsOptional()
@@ -16,5 +12,5 @@ export class BaseDTO {
   updatedAt: Date;
 
   @IsOptional()
-  isDeleted: boolean;
+  deletedAt: Date;
 }

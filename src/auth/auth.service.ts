@@ -6,6 +6,7 @@ import { Users } from 'src/database/schemas/users.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { LoginUserDTO } from './dto/login.dto';
+import { Role } from 'src/database/enums/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +35,7 @@ export class AuthService {
   }
 
   async registerUser(createUserDTO: CreateUserDTO): Promise<Users> {
-    const { username, email, password } = createUserDTO;
+    const { username, email, password, role } = createUserDTO;
     const user = await this.usersModel.findOne({ email: email });
     if (user) {
       throw new Error('El email ya esta registrado');
@@ -46,6 +47,7 @@ export class AuthService {
       username,
       email,
       password: hashedPassword,
+      role: role || [Role.USER],
     });
 
     await newUser.save();
