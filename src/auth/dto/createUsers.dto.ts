@@ -7,8 +7,8 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { BaseDTO } from 'src/base/base.dto';
-import { Role } from 'src/database/enums/role.enum';
+import { BaseDTO } from './../../base/base.dto';
+import { Role } from './../../database/enums/role.enum';
 
 export class CreateUserDTO extends BaseDTO {
   @IsString()
@@ -32,5 +32,5 @@ export class CreateUserDTO extends BaseDTO {
   })
   @IsOptional()
   @IsEnum([Role.USER, Role.ADMIN])
-  role?: string[];
+  role?: Role[];
 }

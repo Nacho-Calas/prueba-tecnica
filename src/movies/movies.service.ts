@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import axios from 'axios';
 import { Model } from 'mongoose';
-import { Movies } from 'src/database/schemas/movies.schema';
+import { Movies } from '../database/schemas/movies.schema';
 import { CreateMoviesDTO } from './dto/createMovies.dto';
 import { UpdateMoviesDTO } from './dto/updateMovies.dto';
 
@@ -23,19 +23,17 @@ export class MoviesService {
         console.log(`La película ${movie.title} ya existe en la base de datos`);
         continue;
       }
-      const newMovie = new this.movieModel(movie);
-      await newMovie.save();
+      await this.movieModel.create(movie);
     }
   }
 
   async getMovies(): Promise<Movies[]> {
     try {
-      const movies = await this.movieModel.find({ deletedAt: null }).exec();
-      return movies;
+      return await this.movieModel.find({ deletedAt: null }).exec();
     } catch (error) {
       throw new HttpException(
         `Error al obtener las películas: ${error.message}`,
-        500,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -53,7 +51,7 @@ export class MoviesService {
     } catch (error) {
       throw new HttpException(
         `Error al obtener la película: ${error.message}`,
-        500,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -67,14 +65,11 @@ export class MoviesService {
       if (movieExists) {
         throw new Error('La película ya existe en la base de datos');
       }
-      const newMovie = new this.movieModel(movie);
-      const result = await newMovie.save();
-
-      return result;
+      return await this.movieModel.create(movie);
     } catch (error) {
       throw new HttpException(
         `Error al crear la película: ${error.message}`,
-        500,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -88,27 +83,27 @@ export class MoviesService {
       if (!movieExists) {
         throw new Error('La película no existe en la base de datos');
       }
-      
-      return this.movieModel.findByIdAndUpdate(id, {...movie, updatedAt: Date.now()}, { new: true }).exec();
+
+      return this.movieModel
+        .findByIdAndUpdate(id, { ...movie, updatedAt: Date.now() }, { new: true })
+        .exec();
     } catch (error) {
       throw new HttpException(
         `Error al actualizar la película: ${error.message}`,
-        500,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  // Borrado Logico - No se elimina completamente el registro solo se actualiza el campo isDeleted
   async deleteMovie(id: string): Promise<Movies> {
     try {
-      const response = this.movieModel
+      return this.movieModel
         .findByIdAndUpdate(id, { deletedAt: Date.now(), updatedAt: Date.now() }, { new: true })
         .exec();
-      return response;
     } catch (error) {
       throw new HttpException(
         `Error al eliminar la película: ${error.message}`,
-        500,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

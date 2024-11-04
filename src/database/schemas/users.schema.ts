@@ -15,7 +15,7 @@ export class Users extends BaseDocument {
   password: string;
 
   @Prop({ default: [Role.USER], type: [{ type: String, enum: Role }] })
-  role: Role[];
+  role?: Role[];
 }
 
 export type UsersDocument = HydratedDocument<Users>;

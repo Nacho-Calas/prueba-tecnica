@@ -18,18 +18,20 @@ export class AuthController {
   @ApiOperation({ summary: 'Iniciar sesión para un usuario' })
   @ApiBody({ type: LoginUserDTO })
   @ApiResponse({
-    status: 201,
     description: 'El usuario ha sido autenticado con éxito',
+    type: 'token',
+    status: 201,
   })
   @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
   async login(
     @Body() authPayload: LoginUserDTO,
-  ): Promise<{ message: string; access_token: string }> {
+  ): Promise<Object> {
     try {
       const result = await this.authService.validateUser(authPayload);
       return { 
         message: 'Login exitoso',
-        access_token: result.access_token
+        access_token: result.access_token,
+        status: HttpStatus.CREATED,
       };
     } catch (error) {
       throw new HttpException(

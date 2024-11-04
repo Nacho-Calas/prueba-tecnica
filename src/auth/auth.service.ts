@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDTO } from 'src/auth/dto/createUsers.dto';
+import { CreateUserDTO } from './dto/createUsers.dto';
 import * as bcrypt from 'bcryptjs';
-import { Users } from 'src/database/schemas/users.schema';
+import { Users } from './../database/schemas/users.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { LoginUserDTO } from './dto/login.dto';
-import { Role } from 'src/database/enums/role.enum';
+import { Role } from './../database/enums/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -18,13 +18,14 @@ export class AuthService {
   async validateUser({ email, password }: LoginUserDTO): Promise<{ access_token: string }> {
     const user = await this.usersModel.findOne({ email: email }).lean();
 
+    if (!user) {
+      throw new HttpException('Credenciales inválidas', HttpStatus.UNAUTHORIZED);
+    }
+
     const isPasswordMatching = await bcrypt.compare(password, user.password);
 
-    if (!user || !isPasswordMatching) {
-      throw new HttpException(
-        'Credenciales inválidas',
-        HttpStatus.UNAUTHORIZED,
-      );
+    if (!isPasswordMatching) {
+      throw new HttpException('Credenciales inválidas', HttpStatus.UNAUTHORIZED);
     }
 
     const { password: _, ...result } = user;
@@ -43,14 +44,12 @@ export class AuthService {
 
     const hashedPassword = bcrypt.hashSync(password, 10);
 
-    const newUser = new this.usersModel({
+    const newUser = await this.usersModel.create({
       username,
       email,
       password: hashedPassword,
       role: role || [Role.USER],
     });
-
-    await newUser.save();
 
     return newUser.toObject();
   }

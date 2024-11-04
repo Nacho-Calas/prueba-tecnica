@@ -4,12 +4,12 @@ import { Prop, Schema } from '@nestjs/mongoose';
 export abstract class BaseDocument {
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  createdAt?: Date;
 
   @Prop({ default: Date.now })
-  updatedAt: Date;
+  updatedAt?: Date;
 
   @Prop({ default: null })
-  deletedAt: Date;
+  deletedAt?: Date;
 
 }
