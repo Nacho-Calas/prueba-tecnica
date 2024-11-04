@@ -19,7 +19,7 @@
 
 ## Descripción
 
-Este es un proyecto de ejemplo para Conexa utilizando el framework [Nest](https://github.com/nestjs/nest) con TypeScript.
+Este es un proyecto de ejemplo utilizando el framework [Nest](https://github.com/nestjs/nest) con TypeScript.
 
 ## Configuración del Proyecto
 
