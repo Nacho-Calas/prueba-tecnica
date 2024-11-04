@@ -67,5 +67,15 @@ $ npm run test
 ```
 
 
+## Actualizacion 17hs se agrego un docker compose para levantar el proyecto con docker y la db de mongo para facilitar pruebas
+  
+  ```bash
+  # Para levantar el proyecto con docker
+  $ docker-compose up
+  ```
+  Y probar endpoints de:
+  <link>https://www.postman.com/joint-operations-physicist-86328592/workspace/my-workspace/collection/36006330-0d609ef9-507b-426e-a2e9-3a325b276db3?action=share&creator=36006330</link>
+
+
 
 

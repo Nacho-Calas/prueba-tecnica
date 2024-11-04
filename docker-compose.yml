@@ -1,0 +1,33 @@
+#docker-compose file
+version: '3'
+
+services:
+  nestapp:
+    container_name: nestapp
+    image: nestapp:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      DB_URI_BACK: mongodb://root:example@mongo:27017
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      CRON_SCHEDULE: ${CRON_SCHEDULE}
+
+  mongo: 
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017
+    
+

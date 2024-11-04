@@ -1,0 +1,10 @@
+node_modules
+test
+.gitignore
+.git
+.prettierc
+.README.md
+.github
+.env.example
+data
+

@@ -20,7 +20,6 @@ export class MoviesService {
         episode_id: movie.episode_id,
       });
       if (movieExists) {
-        console.log(`La película ${movie.title} ya existe en la base de datos`);
         continue;
       }
       await this.movieModel.create(movie);
