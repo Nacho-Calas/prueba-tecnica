@@ -19,7 +19,7 @@ export class AuthController {
   @ApiBody({ type: LoginUserDTO })
   @ApiResponse({
     description: 'El usuario ha sido autenticado con éxito',
-    type: 'token',
+    type: String,
     status: 201,
   })
   @ApiResponse({ status: 401, description: 'Credenciales inválidas' })

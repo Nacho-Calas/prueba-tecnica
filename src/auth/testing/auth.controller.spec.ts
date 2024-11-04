@@ -1,12 +1,8 @@
+import { jest } from '@jest/globals';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
-import { jest } from '@jest/globals';
-import { LoginUserDTO } from '../dto/login.dto';
-import { CreateUserDTO } from '../dto/createUsers.dto';
-import { PartialType } from '@nestjs/mapped-types';
-import { Role } from 'src/database/enums/role.enum';
-import { HttpException, HttpStatus } from '@nestjs/common';
 
 describe('AuthController', () => {
   let controller: AuthController;

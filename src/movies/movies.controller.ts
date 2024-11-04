@@ -3,15 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { Model } from 'mongoose';
-import { Movies } from 'src/database/schemas/movies.schema';
 import { CreateMoviesDTO } from './dto/createMovies.dto';
 import { MoviesDTO } from './dto/movies.dto';
 import { MoviesService } from './movies.service';
-import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/database/enums/role.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateMoviesDTO } from './dto/updateMovies.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Movies } from '../database/schemas/movies.schema';
+import { Roles } from '../auth/decorators/roles.decorators';
+import { Role } from '../database/enums/role.enum';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 
 @Controller('/movies')
