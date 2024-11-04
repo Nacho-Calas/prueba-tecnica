@@ -3,15 +3,16 @@ import { MoviesController } from '../movies.controller';
 import { MoviesService } from '../movies.service';
 import { CreateMoviesDTO } from '../dto/createMovies.dto';
 import { UpdateMoviesDTO } from '../dto/updateMovies.dto';
-import { HttpStatus } from '@nestjs/common';
+import { getModelToken } from '@nestjs/mongoose';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { AuthGuard, PassportModule } from '@nestjs/passport';
 import { RolesGuard } from '../../auth/guards/roles.guard';
-
+import { Movies } from '../../database/schemas/movies.schema';
 
 describe('MoviesController', () => {
   let moviesController: MoviesController;
   let moviesService: MoviesService;
-  
+
   const mockMoviesService = {
     getMovies: jest.fn(),
     getMovieById: jest.fn(),
@@ -19,13 +20,16 @@ describe('MoviesController', () => {
     updateMovie: jest.fn(),
     deleteMovie: jest.fn(),
   };
-  
+
+  const mockMoviesModel = {};
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
       controllers: [MoviesController],
       providers: [
         { provide: MoviesService, useValue: mockMoviesService },
+        { provide: getModelToken(Movies.name), useValue: mockMoviesModel },
       ],
     })
     .overrideGuard(AuthGuard('jwt'))
@@ -54,6 +58,17 @@ describe('MoviesController', () => {
         status: HttpStatus.OK,
       });
     });
+
+    it('debería lanzar un error si ocurre un problema al obtener las películas', async () => {
+      mockMoviesService.getMovies.mockRejectedValue(new Error('Database error'));
+
+      await expect(moviesController.getMovies()).rejects.toThrow(
+        new HttpException(
+          'Error al obtener las películas: Database error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
+      );
+    });
   });
 
   describe('getMovieById', () => {
@@ -67,6 +82,19 @@ describe('MoviesController', () => {
         movie: mockMovie,
         status: HttpStatus.OK,
       });
+    });
+
+    it('debería lanzar un error si la película no existe', async () => {
+      mockMoviesService.getMovieById.mockRejectedValue(new Error('La película no existe'));
+
+      await expect(
+        moviesController.getMovieById({ params: { id: '123' } } as any),
+      ).rejects.toThrow(
+        new HttpException(
+          'Error al obtener la película: La película no existe',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
+      );
     });
   });
 
@@ -87,6 +115,23 @@ describe('MoviesController', () => {
         status: HttpStatus.OK,
       });
     });
+
+    it('debería lanzar un error si la película ya existe', async () => {
+      const createMovieDto: CreateMoviesDTO = {
+        title: 'Existing Movie',
+        episode_id: 1,
+        director: 'Director',
+        release_date: '2021-01-01',
+      };
+      mockMoviesService.createMovie.mockRejectedValue(new Error('La película ya existe'));
+
+      await expect(moviesController.createMovie(createMovieDto)).rejects.toThrow(
+        new HttpException(
+          'Error al crear la película: La película ya existe',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
+      );
+    });
   });
 
   describe('updateMovie', () => {
@@ -102,6 +147,20 @@ describe('MoviesController', () => {
         status: HttpStatus.OK,
       });
     });
+
+    it('debería lanzar un error si la película no existe para actualizar', async () => {
+      const updateMovieDto: UpdateMoviesDTO = { title: 'Updated Movie' };
+      mockMoviesService.updateMovie.mockRejectedValue(new Error('La película no existe'));
+
+      await expect(
+        moviesController.updateMovie({ params: { id: '123' } } as any, updateMovieDto),
+      ).rejects.toThrow(
+        new HttpException(
+          'Error al actualizar la película: La película no existe',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
+      );
+    });
   });
 
   describe('deleteMovie', () => {
@@ -113,6 +172,19 @@ describe('MoviesController', () => {
         message: 'Película eliminada',
         status: HttpStatus.OK,
       });
+    });
+
+    it('debería lanzar un error si ocurre un problema al eliminar la película', async () => {
+      mockMoviesService.deleteMovie.mockRejectedValue(new Error('Error al eliminar'));
+
+      await expect(
+        moviesController.deleteMovie({ params: { id: '123' } } as any),
+      ).rejects.toThrow(
+        new HttpException(
+          'Error al eliminar la película: Error al eliminar',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
+      );
     });
   });
 });

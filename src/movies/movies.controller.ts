@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -38,7 +38,10 @@ export class MoviesController {
                 status: HttpStatus.OK
             }
         } catch (error) {
-            console.log(error);
+            throw new HttpException(
+                `Error al obtener las películas: ${error.message}`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -54,14 +57,21 @@ export class MoviesController {
     })
     @ApiResponse({ status: 401, description: 'No autorizado' })
     async getMovieById(@Req() req: Request): Promise<Object> {
-        const id = req.params.id;
-        const response = await this.moviesService.getMovieById(id);
-        return {
-            message: 'Película encontrada',
-            movie: response,
-            status: HttpStatus.OK
-        }
+        try{
+            const id = req.params.id;
+            const response = await this.moviesService.getMovieById(id);
+            return {
+                message: 'Película encontrada',
+                movie: response,
+                status: HttpStatus.OK
+            }
+        } catch (error) {
+            throw new HttpException(
+                `Error al obtener la película: ${error.message}`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
     }
+}
  
     @Post('/create')
     @Roles(Role.ADMIN)
@@ -75,12 +85,20 @@ export class MoviesController {
     @ApiBody({ type: CreateMoviesDTO })
     @ApiResponse({ status: 401, description: 'No autorizado' })
     async createMovie(@Body() movie: CreateMoviesDTO): Promise<Object> {
-        await this.moviesService.createMovie(movie);
-        return {
-            message: 'Película creada',
-            movieCreated: movie,
-            status: HttpStatus.OK
-        };
+        try{
+
+            await this.moviesService.createMovie(movie);
+            return {
+                message: 'Película creada',
+                movieCreated: movie,
+                status: HttpStatus.OK
+            };
+        } catch (error) {
+            throw new HttpException(
+                `Error al crear la película: ${error.message}`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     @Put('/update/:id')
@@ -96,12 +114,20 @@ export class MoviesController {
     @ApiBody({ type: UpdateMoviesDTO })
     @ApiResponse({ status: 401, description: 'No autorizado' })
     async updateMovie(@Req() req: Request, @Body() movie: UpdateMoviesDTO): Promise<Object> {
-        const id = req.params.id;
-        const response = await this.moviesService.updateMovie(id, movie);
-        return {
-            message: 'Película actualizada',
-            movieUpdated: response,
-            status: HttpStatus.OK
+        try{
+
+            const id = req.params.id;
+            const response = await this.moviesService.updateMovie(id, movie);
+            return {
+                message: 'Película actualizada',
+                movieUpdated: response,
+                status: HttpStatus.OK
+            }
+        }catch(error){
+            throw new HttpException(
+                `Error al actualizar la película: ${error.message}`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -123,9 +149,11 @@ export class MoviesController {
                 message: 'Película eliminada',
                 status: HttpStatus.OK
             };
-
         }catch(error){
-            throw new Error('Error al eliminar la película' + error.message);
+            throw new HttpException(
+                `Error al eliminar la película: ${error.message}`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
     }
 }
