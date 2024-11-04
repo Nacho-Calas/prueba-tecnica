@@ -31,5 +31,41 @@ $ cd <NOMBRE_DEL_REPOSITORIO>
 $ npm install
 
 ```
-## Una vez instaladas las dependencias, debes configurar las variables de entorno en el archivo .env
+## Configuración de la Base de Datos y ENV
+
+Debes tener algun cluster o base de datos en MongoDB Atlas, o en su defecto, una base de datos local.
+Para configurar la base de datos, debes crear un archivo `.env` en la raíz del proyecto con las siguientes variables de entorno:
+
+```bash
+PORT=<PORT> ## NO ES OBLIGATORIO
+DB_URI_BACK=<URI_DE_LA_BASE_DE_DATOS>
+JWT_SECRET=<SECRET_PARA_JWT>
+JWT_EXPIRES_IN=<TIEMPO_DE_EXPIRACION_DEL_JWT>
+```
+
+## Ejecutar la aplicación
+
+```bash
+# development
+$ npm run start:dev
+$ npm run start:debug ## En caso de querer debuggear la aplicación
+```
+
+## Documentacion de la API
+
+En la URL raiz de la aplicación, se encuentra la documentación de la API, la cual fue generada con Swagger.
+Ademas puedes visitar el siguiente link donde encontraras los endpoints de la API:
+<link>https://www.postman.com/joint-operations-physicist-86328592/workspace/my-workspace/collection/36006330-0d609ef9-507b-426e-a2e9-3a325b276db3?action=share&creator=36006330</link>
+
+## Test
+
+Para ejecutar los test, debes correr el siguiente comando:
+
+```bash
+# unit tests
+$ npm run test
+```
+
+
+
 
