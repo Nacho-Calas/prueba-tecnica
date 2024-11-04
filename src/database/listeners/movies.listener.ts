@@ -7,7 +7,8 @@ import { MoviesService } from "src/movies/movies.service";
 export class MoviesListener {
     constructor(private readonly moviesService: MoviesService) {}
 
-    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+    // Idealmente deberia configurarse para que se ejecute cada 24 horas
+    @Cron(process.env.CRON_SCHEDULE || CronExpression.EVERY_30_SECONDS)
     async handleCron() {
         console.log('Actualizamos las peliculas con la DB');
         await this.moviesService.getAndUpdateMovies();
